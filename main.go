@@ -240,6 +240,29 @@ func startMine() {
 	//collect resources
 	collectResources(gw, account)
 
+	//Check for building upgrades in progress
+	building, buildTime, err := getBuildTimeCompletion(gw)
+	buildingId := building.String()
+	_ = buildTime
+	if err != nil {
+		panic(err.Error())
+	}
+	if buildingId == "0x1" {
+		completeMineUpgrade(gw, "metal", account)
+	}
+	if buildingId == "0x2" {
+		completeMineUpgrade(gw, "crystal", account)
+	}
+	if buildingId == "0x3" {
+		completeMineUpgrade(gw, "deuterium", account)
+	}
+	if buildingId == "0x4" {
+		completeMineUpgrade(gw, "solar_plant", account)
+	}
+	if buildingId == "0x5" {
+		completeMineUpgrade(gw, "robot_factory", account)
+	}
+
 	//loop for start upgrade -> complete upgrade in accordance with strategy guide order
 	var mineLevels MineLevels
 	metalLvl, crystalLvl, deuteriumLvl, solarLvl, robotLvl, err := getMineLevels(gw)
