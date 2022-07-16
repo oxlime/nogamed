@@ -87,6 +87,7 @@ func estimateResourceProduction(gw *gateway.GatewayProvider, id int) int64 {
 }
 
 //Functions for leaderboard
+//Scoreboard will need local node as it will spam sequencer with requests
 func getAllOwnerAddr(gw *gateway.GatewayProvider) [200]string {
 	var res [200]string
 	for i := 1; i < 201; i++ {

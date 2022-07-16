@@ -22,7 +22,7 @@ var (
 	nogameScore    string = "0x025c1d0a3cfab1f5464b2e6a38c91c89bea77397744a7eb24b3f3645108d4abb"
 	//	address         string = "0xdeadbeef"
 	//	privateKey      string = "0x12345678"
-	//	addressDec			string = "12353251531253215151235123" //your private key in decimal instead of hex
+	//	addressDec	string = "1234123412341234" //address in decimal instead of hex
 	feeMargin    int64 = 115
 	maxPoll      int   = 5
 	pollInterval int   = 150
@@ -223,10 +223,6 @@ func startMine() {
 		panic(err.Error())
 	}
 
-	//uncomment for unused var errors
-	//_ = curve
-	//_ = big.NewInt
-
 	// init starknet gateway client
 	gw := gateway.NewProvider(gateway.WithChain(name))
 
@@ -236,33 +232,10 @@ func startMine() {
 		panic(err.Error())
 	}
 
-	//Scoreboard
-	//Need local node or spamming the sequencer
-	//points := getAllPoints(gw, getAllOwnerAddr(gw))
-	//addr := getAllOwnerAddr(gw)
-	//points := getAllPoints(gw, addr)
-	//_ = points //so no errors
-
-	//get resources available
-	/*
-		callResp, err := ogamecall(gw, "resources_available")
-		if err != nil {
-			panic(err.Error())
-		}
-		fmt.Println("Resources available metal: ", types.StrToFelt(callResp[0]), " crystal: ", types.StrToFelt(callResp[1]), " deuterium: ", types.StrToFelt(callResp[2]), " energy: ", types.StrToFelt(callResp[2]))
-	*/
 	resources := getResources(gw)
 	for i, res := range resources {
 		fmt.Println(i, res)
 	}
-
-	/*
-		upgradeCosts, err := getStructureUpgradeCosts(gw)
-		if err != nil {
-			panic(err.Error())
-		}
-		fmt.Println("Structure upgrade costs", upgradeCosts)
-	*/
 
 	//collect resources
 	collectResources(gw, account)
@@ -337,14 +310,5 @@ func startMine() {
 		}
 	}
 
-	//if mineLevels < stratlevels
-	//for level in strat.levels
-	//  if level > minelevel
-	//    check resources enough to start upgrade by checking balance of token by wallet address
-	//		  if not collect resources
-	//		if still not then calculate estimated wait time until enough
-	//    upgrade mineLevel
-
-	//fmt.Scanln()
 	fmt.Println("done")
 }

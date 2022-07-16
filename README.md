@@ -1,4 +1,4 @@
-##NoGamed
+## NoGamed
 
 Bot to help users play the MatchboxDao No-Game on Starknet
 
@@ -15,11 +15,11 @@ First mode available will be mining automation
 NoGame link 
 https://nogamev0-1.netlify.app/
 
-####how to run 
+#### how to run 
 ```
 go mod tidy
 go run .
 ```
 
-####Features List
+#### Features List
 -[ ] Telegram Notifications
