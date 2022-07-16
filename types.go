@@ -1,16 +1,16 @@
-package main 
+package main
 
 type MineLevels struct {
-	metal			int64  
-	crystal		int64 
-	deuterium	int64 
-	solar			int64 
-	robot			int64 
+	metal     int64
+	crystal   int64
+	deuterium int64
+	solar     int64
+	robot     int64
 }
 
 type Mine struct {
-	Name 			string	`json:"name"`
-	MineLevel int64		`json:"mineLevel"`
+	Name      string `json:"name"`
+	MineLevel int64  `json:"mineLevel"`
 }
 
 type Strat struct {

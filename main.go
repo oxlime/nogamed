@@ -1,15 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"time"
 	"context"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"math/big"
+	"os"
 	"strconv"
 	"strings"
-	"io/ioutil"
-	"os"
-	"encoding/json"
+	"time"
 
 	"github.com/dontpanicdao/caigo"
 	"github.com/dontpanicdao/caigo/gateway"
@@ -17,15 +17,15 @@ import (
 )
 
 var (
-	name            string = "testnet"
-	nogameContract	string = "0x035401b96dc690eda2716068d3b03732d7c18af7c0327787660179108789d84f"
-	nogameScore			string = "0x025c1d0a3cfab1f5464b2e6a38c91c89bea77397744a7eb24b3f3645108d4abb"
-//	address         string = "0xdeadbeef"
-//	privateKey      string = "0x12345678"
-//	addressDec			string = "12353251531253215151235123" //your private key in decimal instead of hex
-	feeMargin       int64  = 115
-	maxPoll         int    = 5
-	pollInterval    int    = 150
+	name           string = "testnet"
+	nogameContract string = "0x035401b96dc690eda2716068d3b03732d7c18af7c0327787660179108789d84f"
+	nogameScore    string = "0x025c1d0a3cfab1f5464b2e6a38c91c89bea77397744a7eb24b3f3645108d4abb"
+	//	address         string = "0xdeadbeef"
+	//	privateKey      string = "0x12345678"
+	//	addressDec			string = "12353251531253215151235123" //your private key in decimal instead of hex
+	feeMargin    int64 = 115
+	maxPoll      int   = 5
+	pollInterval int   = 150
 )
 
 func ogamecall(gw *gateway.GatewayProvider, eps string) ([]string, error) {
@@ -34,12 +34,12 @@ func ogamecall(gw *gateway.GatewayProvider, eps string) ([]string, error) {
 		EntryPointSelector: eps,
 		Calldata: []string{
 			addressDec,
-		}, 
-	}, "") 
+		},
+	}, "")
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
-	return resp, nil 
+	return resp, nil
 }
 
 func collectResources(gw *gateway.GatewayProvider, account *caigo.Account) {
@@ -74,7 +74,7 @@ func collectResources(gw *gateway.GatewayProvider, account *caigo.Account) {
 	fmt.Printf("Poll %dsec %dx \n\ttransaction(%s) receipt: %s\n\n", n*pollInterval, n, execResp.TransactionHash, receipt.Status)
 }
 
-func upgradeMine(gw *gateway.GatewayProvider, eps string, account *caigo.Account) (error) {
+func upgradeMine(gw *gateway.GatewayProvider, eps string, account *caigo.Account) error {
 	increment := []types.Transaction{
 		{
 			ContractAddress:    nogameContract,
@@ -206,8 +206,8 @@ func getBuildTimeCompletion(gw *gateway.GatewayProvider) (*types.Felt, *types.Fe
 //test
 func wTime(wait int64) {
 	fmt.Println("wait and time in unix", wait, time.Now().Unix())
-	sleepTime := wait - time.Now().Unix() + 265 //adding 65 seconds buffer 
-  time.Sleep(time.Duration(sleepTime * 1000000000))  
+	sleepTime := wait - time.Now().Unix() + 265 //adding 65 seconds buffer
+	time.Sleep(time.Duration(sleepTime * 1000000000))
 	fmt.Println("sleep time = ", sleepTime)
 }
 
@@ -245,11 +245,11 @@ func startMine() {
 
 	//get resources available
 	/*
-	callResp, err := ogamecall(gw, "resources_available")
-	if err != nil {
-		panic(err.Error())
-	}
-	fmt.Println("Resources available metal: ", types.StrToFelt(callResp[0]), " crystal: ", types.StrToFelt(callResp[1]), " deuterium: ", types.StrToFelt(callResp[2]), " energy: ", types.StrToFelt(callResp[2]))
+		callResp, err := ogamecall(gw, "resources_available")
+		if err != nil {
+			panic(err.Error())
+		}
+		fmt.Println("Resources available metal: ", types.StrToFelt(callResp[0]), " crystal: ", types.StrToFelt(callResp[1]), " deuterium: ", types.StrToFelt(callResp[2]), " energy: ", types.StrToFelt(callResp[2]))
 	*/
 	resources := getResources(gw)
 	for i, res := range resources {
@@ -257,19 +257,19 @@ func startMine() {
 	}
 
 	/*
-	upgradeCosts, err := getStructureUpgradeCosts(gw)
-	if err != nil {
-		panic(err.Error())
-	}
-	fmt.Println("Structure upgrade costs", upgradeCosts)
+		upgradeCosts, err := getStructureUpgradeCosts(gw)
+		if err != nil {
+			panic(err.Error())
+		}
+		fmt.Println("Structure upgrade costs", upgradeCosts)
 	*/
 
 	//collect resources
-	//collectResources(gw, account)
+	collectResources(gw, account)
 
 	//loop for start upgrade -> complete upgrade in accordance with strategy guide order
 	var mineLevels MineLevels
-	metalLvl, crystalLvl, deuteriumLvl, solarLvl, robotLvl , err := getMineLevels(gw)
+	metalLvl, crystalLvl, deuteriumLvl, solarLvl, robotLvl, err := getMineLevels(gw)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -280,23 +280,23 @@ func startMine() {
 	mineLevels.robot = robotLvl
 	fmt.Println("Mine Levels: ", mineLevels)
 
-	//get strat structure from strat.json file 
+	//get strat structure from strat.json file
 	fileContent, err := os.Open("strat.json")
 	if err != nil {
 		panic(err.Error())
 	}
-  defer fileContent.Close()
-  byteResult, _ := ioutil.ReadAll(fileContent)
-  var strat Strat 
-  json.Unmarshal(byteResult, &strat)
+	defer fileContent.Close()
+	byteResult, _ := ioutil.ReadAll(fileContent)
+	var strat Strat
+	json.Unmarshal(byteResult, &strat)
 
-  for i := 0; i < len(strat.Mines); i++ {
+	for i := 0; i < len(strat.Mines); i++ {
 		if strat.Mines[i].Name == "Solar_Plant" {
 			if strat.Mines[i].MineLevel > mineLevels.solar {
 				for {
 					fmt.Println("Upgrading : ", strat.Mines[i].Name)
 					err := upgradeMine(gw, "solar_plant", account)
-					if err == nil{
+					if err == nil {
 						break
 					}
 					if err != nil {
@@ -308,9 +308,9 @@ func startMine() {
 							panic(err.Error())
 						}
 					}
-				}	
+				}
 			}
-		} 
+		}
 		if strat.Mines[i].Name == "Metal_Mine" {
 			if strat.Mines[i].MineLevel > mineLevels.metal {
 				fmt.Println("Upgrading: ", strat.Mines[i].Name)
@@ -334,11 +334,11 @@ func startMine() {
 				fmt.Println("Upgrading: ", strat.Mines[i].Name)
 				upgradeMine(gw, "robot_factory", account)
 			}
-  	}
+		}
 	}
-	
-	//if mineLevels < stratlevels 
-	//for level in strat.levels 
+
+	//if mineLevels < stratlevels
+	//for level in strat.levels
 	//  if level > minelevel
 	//    check resources enough to start upgrade by checking balance of token by wallet address
 	//		  if not collect resources
