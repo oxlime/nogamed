@@ -6,6 +6,7 @@ import (
 	"context"
 	"math/big"
 	"strconv"
+	"strings"
 	"io/ioutil"
 	"os"
 	"encoding/json"
@@ -18,6 +19,7 @@ import (
 var (
 	name            string = "testnet"
 	nogameContract	string = "0x035401b96dc690eda2716068d3b03732d7c18af7c0327787660179108789d84f"
+	nogameScore			string = "0x025c1d0a3cfab1f5464b2e6a38c91c89bea77397744a7eb24b3f3645108d4abb"
 //	address         string = "0xdeadbeef"
 //	privateKey      string = "0x12345678"
 //	addressDec			string = "12353251531253215151235123" //your private key in decimal instead of hex
@@ -72,7 +74,7 @@ func collectResources(gw *gateway.GatewayProvider, account *caigo.Account) {
 	fmt.Printf("Poll %dsec %dx \n\ttransaction(%s) receipt: %s\n\n", n*pollInterval, n, execResp.TransactionHash, receipt.Status)
 }
 
-func upgradeMine(gw *gateway.GatewayProvider, eps string, account *caigo.Account) {
+func upgradeMine(gw *gateway.GatewayProvider, eps string, account *caigo.Account) (error) {
 	increment := []types.Transaction{
 		{
 			ContractAddress:    nogameContract,
@@ -83,6 +85,11 @@ func upgradeMine(gw *gateway.GatewayProvider, eps string, account *caigo.Account
 	// estimate fee for executing transaction
 	feeEstimate, err := account.EstimateFee(context.Background(), increment)
 	if err != nil {
+		if strings.Contains(err.Error(), "Error message: ERC20: burn amount exceeds balance") {
+			time.Sleep(10 * time.Second)
+			fmt.Println("caught error")
+			return err
+		}
 		panic(err.Error())
 	}
 	fee := types.Felt{
@@ -110,6 +117,7 @@ func upgradeMine(gw *gateway.GatewayProvider, eps string, account *caigo.Account
 	fmt.Println("building  id: ", buildingId)
 	fmt.Println("build time completion: ", buildTime)
 	completeMineUpgrade(gw, eps, account)
+	return nil
 }
 
 func completeMineUpgrade(gw *gateway.GatewayProvider, eps string, account *caigo.Account) {
@@ -204,6 +212,10 @@ func wTime(wait int64) {
 }
 
 func main() {
+	startMine()
+}
+
+func startMine() {
 	// init the stark curve with constants
 	// 'WithConstants()' will pull the StarkNet 'pedersen_params.json' file if you don't have it locally
 	curve, err := caigo.SC(caigo.WithConstants())
@@ -223,6 +235,13 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	//Scoreboard
+	//Need local node or spamming the sequencer
+	//points := getAllPoints(gw, getAllOwnerAddr(gw))
+	//addr := getAllOwnerAddr(gw)
+	//points := getAllPoints(gw, addr)
+	//_ = points //so no errors
 
 	//get resources available
 	/*
@@ -246,7 +265,7 @@ func main() {
 	*/
 
 	//collect resources
-	collectResources(gw, account)
+	//collectResources(gw, account)
 
 	//loop for start upgrade -> complete upgrade in accordance with strategy guide order
 	var mineLevels MineLevels
@@ -274,8 +293,22 @@ func main() {
   for i := 0; i < len(strat.Mines); i++ {
 		if strat.Mines[i].Name == "Solar_Plant" {
 			if strat.Mines[i].MineLevel > mineLevels.solar {
-				fmt.Println("Upgrading : ", strat.Mines[i].Name)
-				upgradeMine(gw, "solar_plant", account)
+				for {
+					fmt.Println("Upgrading : ", strat.Mines[i].Name)
+					err := upgradeMine(gw, "solar_plant", account)
+					if err == nil{
+						break
+					}
+					if err != nil {
+						if strings.Contains(err.Error(), "Error message: ERC20: burn amount exceeds balance") {
+							fmt.Println("Erc20 burn amount exceeds balance, retying after 10 minutes and collecting resources")
+							time.Sleep(10 * time.Minute)
+							collectResources(gw, account)
+						} else {
+							panic(err.Error())
+						}
+					}
+				}	
 			}
 		} 
 		if strat.Mines[i].Name == "Metal_Mine" {

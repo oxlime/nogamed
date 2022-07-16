@@ -5,7 +5,7 @@ import (
 	"time"
 	"strconv"
 	//"encoding/json"
-
+	"context"
 	//"github.com/dontpanicdao/caigo"
 	"github.com/dontpanicdao/caigo/gateway"
 	"github.com/dontpanicdao/caigo/types"
@@ -83,4 +83,44 @@ func estimateResourceProduction(gw *gateway.GatewayProvider, id int) (int64) {
 
 	ppm := amount2 - amount
 	return ppm
+}
+
+//Functions for leaderboard
+func getAllOwnerAddr(gw *gateway.GatewayProvider) ([200]string) {
+	var res [200]string
+	for i := 1; i < 201; i++ {
+		resp, err := gw.Call(context.Background(), types.FunctionCall{
+			ContractAddress:    nogameScore,
+			EntryPointSelector: "ownerOf",
+			Calldata: []string{
+				strconv.Itoa(i), "0",
+			}, 
+		}, "") 
+		if err != nil {
+			//return nil, err	
+			panic(err.Error())
+		}
+		res[i-1] = resp[0]
+	}
+	return res
+}
+
+func getAllPoints(gw *gateway.GatewayProvider, address [200]string) ([200]string) {
+	var res [200]string
+	for i := 0; i < 200; i++ {
+		resp, err := gw.Call(context.Background(), types.FunctionCall{
+			ContractAddress:    nogameContract,
+			EntryPointSelector: "player_points",
+			Calldata: []string{
+				address[i],
+			}, 
+		}, "") 
+		if err != nil {
+			//return nil, err	
+			panic(err.Error())
+		}
+		res[i] = resp[0]
+		fmt.Println("Player: ", address[i], " Score: ", res[i])
+	}
+	return res
 }

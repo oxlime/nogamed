@@ -1,3 +1,5 @@
+##NoGamed
+
 Bot to help users play the MatchboxDao No-Game on Starknet
 
 Mines and factories are upgraded in order of the strat.json file originally set to follow the Ogame strategy guide https://ogame.fandom.com/wiki/Quick_Start_Guide
@@ -10,7 +12,11 @@ This is a prototype and under experimental developement
 
 First mode available will be mining automation
 
-how to run 
----------------
+####how to run 
+```
 go mod tidy
 go run .
+```
+
+####Features List
+-[ ] Telegram Notifications
