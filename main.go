@@ -232,11 +232,6 @@ func startMine() {
 		panic(err.Error())
 	}
 
-	resources := getResources(gw)
-	for i, res := range resources {
-		fmt.Println(i, res)
-	}
-
 	//collect resources
 	collectResources(gw, account)
 
@@ -309,26 +304,82 @@ func startMine() {
 		}
 		if strat.Mines[i].Name == "Metal_Mine" {
 			if strat.Mines[i].MineLevel > mineLevels.metal {
-				fmt.Println("Upgrading: ", strat.Mines[i].Name)
-				upgradeMine(gw, "metal", account)
+				for {
+					fmt.Println("Upgrading : ", strat.Mines[i].Name)
+					err := upgradeMine(gw, "metal", account)
+					if err == nil {
+						break
+					}
+					if err != nil {
+						if strings.Contains(err.Error(), "Error message: ERC20: burn amount exceeds balance") {
+							fmt.Println("Erc20 burn amount exceeds balance, retying after 10 minutes and collecting resources")
+							time.Sleep(10 * time.Minute)
+							collectResources(gw, account)
+						} else {
+							panic(err.Error())
+						}
+					}
+				}
 			}
 		}
 		if strat.Mines[i].Name == "Crystal_Mine" {
 			if strat.Mines[i].MineLevel > mineLevels.crystal {
-				fmt.Println("Upgrading: ", strat.Mines[i].Name)
-				upgradeMine(gw, "crystal", account)
+				for {
+					fmt.Println("Upgrading : ", strat.Mines[i].Name)
+					err := upgradeMine(gw, "crystal", account)
+					if err == nil {
+						break
+					}
+					if err != nil {
+						if strings.Contains(err.Error(), "Error message: ERC20: burn amount exceeds balance") {
+							fmt.Println("Erc20 burn amount exceeds balance, retying after 10 minutes and collecting resources")
+							time.Sleep(10 * time.Minute)
+							collectResources(gw, account)
+						} else {
+							panic(err.Error())
+						}
+					}
+				}
 			}
 		}
 		if strat.Mines[i].Name == "Deuterium_Synthesizer" {
 			if strat.Mines[i].MineLevel > mineLevels.deuterium {
-				fmt.Println("Upgrading: ", strat.Mines[i].Name)
-				upgradeMine(gw, "deuterium", account)
+				for {
+					fmt.Println("Upgrading : ", strat.Mines[i].Name)
+					err := upgradeMine(gw, "deuterium", account)
+					if err == nil {
+						break
+					}
+					if err != nil {
+						if strings.Contains(err.Error(), "Error message: ERC20: burn amount exceeds balance") {
+							fmt.Println("Erc20 burn amount exceeds balance, retying after 10 minutes and collecting resources")
+							time.Sleep(10 * time.Minute)
+							collectResources(gw, account)
+						} else {
+							panic(err.Error())
+						}
+					}
+				}
 			}
 		}
 		if strat.Mines[i].Name == "Robotics_Factory" {
 			if strat.Mines[i].MineLevel > mineLevels.robot {
-				fmt.Println("Upgrading: ", strat.Mines[i].Name)
-				upgradeMine(gw, "robot_factory", account)
+				for {
+					fmt.Println("Upgrading : ", strat.Mines[i].Name)
+					err := upgradeMine(gw, "robot_factory", account)
+					if err == nil {
+						break
+					}
+					if err != nil {
+						if strings.Contains(err.Error(), "Error message: ERC20: burn amount exceeds balance") {
+							fmt.Println("Erc20 burn amount exceeds balance, retying after 10 minutes and collecting resources")
+							time.Sleep(10 * time.Minute)
+							collectResources(gw, account)
+						} else {
+							panic(err.Error())
+						}
+					}
+				}
 			}
 		}
 	}
