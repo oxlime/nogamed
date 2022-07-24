@@ -97,7 +97,7 @@ func getAllOwnerAddr(gw *gateway.GatewayProvider) [200]string {
 			Calldata: []string{
 				strconv.Itoa(i), "0",
 			},
-		}, "")
+		}, "0x74c8899f93435848b9adb756e6efa3774e36c49c18bb2fa75f429e374a23506")
 		if err != nil {
 			//return nil, err
 			panic(err.Error())
@@ -116,7 +116,7 @@ func getAllPoints(gw *gateway.GatewayProvider, address [200]string) [200]string 
 			Calldata: []string{
 				address[i],
 			},
-		}, "")
+		}, "0x74c8899f93435848b9adb756e6efa3774e36c49c18bb2fa75f429e374a23506")
 		if err != nil {
 			//return nil, err
 			panic(err.Error())

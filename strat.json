@@ -38,6 +38,6 @@
 	{"name":"Combustion_Drive", "mineLevel": 1},
 	{"name":"Solar_Plant", "mineLevel":	11},
 	{"name":"Crystal_Mine", "mineLevel": 7},	
-	{"name":"Metal_Mine", "mineLevel": 9}	
+	{"name":"Metal_Mine", "mineLevel": 9}
 	]	
 }

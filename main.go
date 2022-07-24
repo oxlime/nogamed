@@ -18,8 +18,10 @@ import (
 
 var (
 	name           string = "testnet"
+	local	string = "local"
 	nogameContract string = "0x035401b96dc690eda2716068d3b03732d7c18af7c0327787660179108789d84f"
 	nogameScore    string = "0x025c1d0a3cfab1f5464b2e6a38c91c89bea77397744a7eb24b3f3645108d4abb"
+	leaderboardContract string = "0x0326d5c668224c79be41582a1a63ab7c8213e82c23ee94d28ddd93344c5cb105"
 	//	address         string = "0xdeadbeef"
 	//	privateKey      string = "0x12345678"
 	//	addressDec	string = "1234123412341234" //address in decimal instead of hex
@@ -212,6 +214,7 @@ func wTime(wait int64) {
 }
 
 func main() {
+	//leaderboard()
 	startMine()
 }
 
@@ -233,7 +236,8 @@ func startMine() {
 	}
 
 	//collect resources
-	collectResources(gw, account)
+	//fmt.Println("Collecting Resources")
+	//collectResources(gw, account)
 
 	//Check for building upgrades in progress
 	building, buildTime, err := getBuildTimeCompletion(gw)
@@ -378,11 +382,50 @@ func startMine() {
 						} else {
 							panic(err.Error())
 						}
-					}
-				}
+					} }
 			}
 		}
 	}
 
 	fmt.Println("done")
+}
+
+func leaderboard() {
+
+	// init starknet gateway client
+	gw := gateway.NewProvider(gateway.WithChain(name))
+
+	resp, err := gw.Call(context.Background(), types.FunctionCall{
+		ContractAddress:    leaderboardContract,
+		EntryPointSelector: "get_owners_array",
+		Calldata: []string{
+			"1067376053791535235517906780068452549623571831194888750889088837380668738235",
+			"1",
+			"0",
+		},
+	}, "")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	respoints, err := gw.Call(context.Background(), types.FunctionCall{
+		ContractAddress:    leaderboardContract,
+		EntryPointSelector: "get_points_array",
+		Calldata: []string{
+			"1067376053791535235517906780068452549623571831194888750889088837380668738235",
+			"1",
+			"0",
+		},
+	}, "")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for index, element := range respoints {
+		fmt.Println("Wallet: ", resp[index], " Score: ", types.StrToFelt(element))
+	}
+
+  //mines := getResources(gw) 
+	//fmt.Println("Resources on id 2: ", mines[2])
+
 }
