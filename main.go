@@ -17,17 +17,17 @@ import (
 )
 
 var (
-	name           string = "testnet"
-	local	string = "local"
-	nogameContract string = "0x035401b96dc690eda2716068d3b03732d7c18af7c0327787660179108789d84f"
-	nogameScore    string = "0x025c1d0a3cfab1f5464b2e6a38c91c89bea77397744a7eb24b3f3645108d4abb"
+	name                string = "testnet"
+	local               string = "local"
+	nogameContract      string = "0x035401b96dc690eda2716068d3b03732d7c18af7c0327787660179108789d84f"
+	nogameScore         string = "0x025c1d0a3cfab1f5464b2e6a38c91c89bea77397744a7eb24b3f3645108d4abb"
 	leaderboardContract string = "0x0326d5c668224c79be41582a1a63ab7c8213e82c23ee94d28ddd93344c5cb105"
 	//	address         string = "0xdeadbeef"
 	//	privateKey      string = "0x12345678"
 	//	addressDec	string = "1234123412341234" //address in decimal instead of hex
-	feeMargin    int64 = 115
-	maxPoll      int   = 5
-	pollInterval int   = 150
+	feeMargin    uint64 = 115
+	maxPoll      int    = 5
+	pollInterval int    = 150
 )
 
 func ogamecall(gw *gateway.GatewayProvider, eps string) ([]string, error) {
@@ -58,9 +58,9 @@ func collectResources(gw *gateway.GatewayProvider, account *caigo.Account) {
 		panic(err.Error())
 	}
 	fee := types.Felt{
-		Int: big.NewInt((feeEstimate.Amount * feeMargin) / 100),
+		Int: new(big.Int).SetUint64((feeEstimate.OverallFee * feeMargin) / 100),
 	}
-	fmt.Printf("Fee:\n\tEstimate\t\t%v wei\n\tEstimate+Margin\t\t%v wei\n\n", feeEstimate.Amount, fee)
+	fmt.Printf("Fee:\n\tEstimate\t\t%v wei\n\tEstimate+Margin\t\t%v wei\n\n", feeEstimate.OverallFee, fee)
 
 	// execute transaction
 	execResp, err := account.Execute(context.Background(), &fee, collect)
@@ -95,9 +95,9 @@ func upgradeMine(gw *gateway.GatewayProvider, eps string, account *caigo.Account
 		panic(err.Error())
 	}
 	fee := types.Felt{
-		Int: big.NewInt((feeEstimate.Amount * feeMargin) / 100),
+		Int: new(big.Int).SetUint64((feeEstimate.OverallFee * feeMargin) / 100),
 	}
-	fmt.Printf("Fee:\n\tEstimate\t\t%v wei\n\tEstimate+Margin\t\t%v wei\n\n", feeEstimate.Amount, fee)
+	fmt.Printf("Fee:\n\tEstimate\t\t%v wei\n\tEstimate+Margin\t\t%v wei\n\n", feeEstimate.OverallFee, fee)
 
 	// execute transaction
 	execResp, err := account.Execute(context.Background(), &fee, increment)
@@ -136,9 +136,9 @@ func completeMineUpgrade(gw *gateway.GatewayProvider, eps string, account *caigo
 		panic(err.Error())
 	}
 	fee := types.Felt{
-		Int: big.NewInt((feeEstimate.Amount * feeMargin) / 100),
+		Int: new(big.Int).SetUint64((feeEstimate.OverallFee * feeMargin) / 100),
 	}
-	fmt.Printf("Fee:\n\tEstimate\t\t%v wei\n\tEstimate+Margin\t\t%v wei\n\n", feeEstimate.Amount, fee)
+	fmt.Printf("Fee:\n\tEstimate\t\t%v wei\n\tEstimate+Margin\t\t%v wei\n\n", feeEstimate.OverallFee, fee)
 
 	// execute transaction
 	execResp, err := account.Execute(context.Background(), &fee, complete)
@@ -221,23 +221,23 @@ func main() {
 func startMine() {
 	// init the stark curve with constants
 	// 'WithConstants()' will pull the StarkNet 'pedersen_params.json' file if you don't have it locally
-	curve, err := caigo.SC(caigo.WithConstants())
-	if err != nil {
-		panic(err.Error())
-	}
+	//curve, err := caigo.SC(caigo.WithConstants())
+	//if err != nil {
+	//		panic(err.Error())
+	//	}
 
 	// init starknet gateway client
 	gw := gateway.NewProvider(gateway.WithChain(name))
 
 	//init account handler
-	account, err := caigo.NewAccount(&curve, privateKey, address, gw)
+	account, err := caigo.NewAccount(privateKey, address, gw)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	//collect resources
-	//fmt.Println("Collecting Resources")
-	//collectResources(gw, account)
+	fmt.Println("Collecting Resources")
+	collectResources(gw, account)
 
 	//Check for building upgrades in progress
 	building, buildTime, err := getBuildTimeCompletion(gw)
@@ -382,7 +382,8 @@ func startMine() {
 						} else {
 							panic(err.Error())
 						}
-					} }
+					}
+				}
 			}
 		}
 	}
@@ -425,7 +426,7 @@ func leaderboard() {
 		fmt.Println("Wallet: ", resp[index], " Score: ", types.StrToFelt(element))
 	}
 
-  //mines := getResources(gw) 
+	//mines := getResources(gw)
 	//fmt.Println("Resources on id 2: ", mines[2])
 
 }
