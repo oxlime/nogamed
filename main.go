@@ -30,7 +30,7 @@ var (
 
 func main() {
 	leaderboard()
-	//startMine()
+	startMine()
 }
 
 func startMine() {
