@@ -312,31 +312,6 @@ func getAllPoints(gw *gateway.GatewayProvider, address [200]string) [200]string 
 	return res
 }
 
-//loop strat guide
-/*
-	for i := 0; i < len(strat.Mines); i++ {
-		if strat.Mines[i].Name == "Solar_Plant" {
-			if strat.Mines[i].MineLevel > mineLevels.solar {
-				for {
-					fmt.Println("Upgrading : ", strat.Mines[i].Name)
-					err := upgradeMine(gw, "solar_plant", account)
-					if err == nil {
-						break
-					}
-					if err != nil {
-						if strings.Contains(err.Error(), "Error message: ERC20: burn amount exceeds balance") {
-							fmt.Println("Erc20 burn amount exceeds balance, retying after 10 minutes and collecting resources")
-							time.Sleep(10 * time.Minute)
-							collectResources(gw, account)
-						} else {
-							panic(err.Error())
-						}
-					}
-				}
-			}
-		}
-*/
-
 func matchingMineNumber(name string) int {
 	if name == "Solar_Plant" {
 		return 4
