@@ -196,28 +196,6 @@ func wTime(wait int64) {
 	fmt.Println("sleep time = ", sleepTime)
 }
 
-/* cairo
-(mine_factor mine_level)
-    let fact1 = mine_factor * mine_level
-    let (fact2) = pow(11, mine_level)
-    local fact3 = fact1 * fact2
-    let (fact4) = pow(10, mine_level)
-    let (fact5, _) = unsigned_div_rem(fact3, fact4)
-    return (production_hour=fact5)
-*/
-/*
-func resourceProductionFormula(mineFactor types.Felt, mineLevel types.Felt) {
-	fact1 := mineFactor * mineLevel
-	var temp = big.NewInt(11)
-	fact2 := temp.Exp(temp, mineLevel)
-	fact3 := fact1.Mul(fact1, fact2)
-	var temp2 = bigNewInt(10)
-	fact4 := temp2.Exp(temp2, mineLevel)
-	fact5
-
-}
-*/
-
 func getResources(gw *gateway.GatewayProvider) [3]int64 {
 	callResp, err := ogamecall(gw, "resources_available")
 	if err != nil {
